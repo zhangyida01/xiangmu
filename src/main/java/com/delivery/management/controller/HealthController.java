@@ -11,6 +11,6 @@ public class HealthController {
 
     @GetMapping
     public Result<String> health() {
-        return Result.success("系统运行正常");
+        return Result.success("绯荤粺杩愯姝ｅ父");
     }
 }
