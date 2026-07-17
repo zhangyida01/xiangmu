@@ -1,4 +1,4 @@
-﻿package com.delivery.management.common;
+package com.delivery.management.common;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;

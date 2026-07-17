@@ -1,4 +1,4 @@
-﻿package com.delivery.management;
+package com.delivery.management;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;

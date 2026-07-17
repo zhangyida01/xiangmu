@@ -1,4 +1,4 @@
-﻿package com.delivery.management.mapper;
+package com.delivery.management.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.delivery.management.entity.Project;

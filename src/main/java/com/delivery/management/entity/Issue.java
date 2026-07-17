@@ -1,4 +1,4 @@
-﻿package com.delivery.management.entity;
+package com.delivery.management.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.delivery.management.common.BaseEntity;

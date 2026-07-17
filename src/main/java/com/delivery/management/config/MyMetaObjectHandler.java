@@ -1,4 +1,4 @@
-﻿package com.delivery.management.config;
+package com.delivery.management.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;

@@ -1,4 +1,4 @@
-﻿package com.delivery.management.controller;
+package com.delivery.management.controller;
 
 import com.delivery.management.common.Result;
 import org.springframework.web.bind.annotation.GetMapping;
