@@ -1,68 +1,62 @@
 -- ========================================
--- 交付项目管理系统数据库初始化脚本
+-- 浜や粯椤圭洰绠＄悊绯荤粺鏁版嵁搴撳垵濮嬪寲鑴氭湰
 -- ========================================
 
--- 创建数据库
-CREATE DATABASE IF NOT EXISTS delivery_management DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+-- 鍒涘缓鏁版嵁搴?CREATE DATABASE IF NOT EXISTS delivery_management DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 USE delivery_management;
 
 -- ========================================
--- 1. 组织与用户管理
--- ========================================
+-- 1. 缁勭粐涓庣敤鎴风鐞?-- ========================================
 
--- 用户表
-DROP TABLE IF EXISTS sys_user;
+-- 鐢ㄦ埛琛?DROP TABLE IF EXISTS sys_user;
 CREATE TABLE sys_user (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  username VARCHAR(50) NOT NULL COMMENT '用户名',
-  password VARCHAR(100) NOT NULL COMMENT '密码',
-  real_name VARCHAR(50) COMMENT '真实姓名',
-  email VARCHAR(100) COMMENT '邮箱',
-  phone VARCHAR(20) COMMENT '手机号',
-  dept_id BIGINT COMMENT '部门ID',
-  status TINYINT DEFAULT 1 COMMENT '状态：0-禁用 1-启用',
-  avatar VARCHAR(255) COMMENT '头像',
-  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  create_by BIGINT COMMENT '创建人',
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  update_by BIGINT COMMENT '更新人',
-  deleted TINYINT DEFAULT 0 COMMENT '删除标识：0-未删除 1-已删除',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '鐢ㄦ埛ID',
+  username VARCHAR(50) NOT NULL COMMENT '鐢ㄦ埛鍚?,
+  password VARCHAR(100) NOT NULL COMMENT '瀵嗙爜',
+  real_name VARCHAR(50) COMMENT '鐪熷疄濮撳悕',
+  email VARCHAR(100) COMMENT '閭',
+  phone VARCHAR(20) COMMENT '鎵嬫満鍙?,
+  dept_id BIGINT COMMENT '閮ㄩ棬ID',
+  status TINYINT DEFAULT 1 COMMENT '鐘舵€侊細0-绂佺敤 1-鍚敤',
+  avatar VARCHAR(255) COMMENT '澶村儚',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '鍒涘缓鏃堕棿',
+  create_by BIGINT COMMENT '鍒涘缓浜?,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '鏇存柊鏃堕棿',
+  update_by BIGINT COMMENT '鏇存柊浜?,
+  deleted TINYINT DEFAULT 0 COMMENT '鍒犻櫎鏍囪瘑锛?-鏈垹闄?1-宸插垹闄?,
   PRIMARY KEY (id),
   UNIQUE KEY uk_username (username)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='鐢ㄦ埛琛?;
 
--- 部门表
-DROP TABLE IF EXISTS sys_department;
+-- 閮ㄩ棬琛?DROP TABLE IF EXISTS sys_department;
 CREATE TABLE sys_department (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '部门ID',
-  dept_name VARCHAR(50) NOT NULL COMMENT '部门名称',
-  parent_id BIGINT DEFAULT 0 COMMENT '父部门ID',
-  dept_code VARCHAR(50) COMMENT '部门编码',
-  sort INT DEFAULT 0 COMMENT '排序',
-  leader VARCHAR(50) COMMENT '负责人',
-  phone VARCHAR(20) COMMENT '联系电话',
-  status TINYINT DEFAULT 1 COMMENT '状态：0-禁用 1-启用',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '閮ㄩ棬ID',
+  dept_name VARCHAR(50) NOT NULL COMMENT '閮ㄩ棬鍚嶇О',
+  parent_id BIGINT DEFAULT 0 COMMENT '鐖堕儴闂↖D',
+  dept_code VARCHAR(50) COMMENT '閮ㄩ棬缂栫爜',
+  sort INT DEFAULT 0 COMMENT '鎺掑簭',
+  leader VARCHAR(50) COMMENT '璐熻矗浜?,
+  phone VARCHAR(20) COMMENT '鑱旂郴鐢佃瘽',
+  status TINYINT DEFAULT 1 COMMENT '鐘舵€侊細0-绂佺敤 1-鍚敤',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='部门表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='閮ㄩ棬琛?;
 
 -- ========================================
--- 2. 角色与权限管理
--- ========================================
+-- 2. 瑙掕壊涓庢潈闄愮鐞?-- ========================================
 
--- 角色表
-DROP TABLE IF EXISTS sys_role;
+-- 瑙掕壊琛?DROP TABLE IF EXISTS sys_role;
 CREATE TABLE sys_role (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '角色ID',
-  role_code VARCHAR(50) NOT NULL COMMENT '角色编码',
-  role_name VARCHAR(50) NOT NULL COMMENT '角色名称',
-  description VARCHAR(200) COMMENT '描述',
-  status TINYINT DEFAULT 1 COMMENT '状态：0-禁用 1-启用',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '瑙掕壊ID',
+  role_code VARCHAR(50) NOT NULL COMMENT '瑙掕壊缂栫爜',
+  role_name VARCHAR(50) NOT NULL COMMENT '瑙掕壊鍚嶇О',
+  description VARCHAR(200) COMMENT '鎻忚堪',
+  status TINYINT DEFAULT 1 COMMENT '鐘舵€侊細0-绂佺敤 1-鍚敤',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -70,55 +64,51 @@ CREATE TABLE sys_role (
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY uk_role_code (role_code)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='瑙掕壊琛?;
 
--- 用户角色关联表
-DROP TABLE IF EXISTS sys_user_role;
+-- 鐢ㄦ埛瑙掕壊鍏宠仈琛?DROP TABLE IF EXISTS sys_user_role;
 CREATE TABLE sys_user_role (
   id BIGINT NOT NULL AUTO_INCREMENT,
-  user_id BIGINT NOT NULL COMMENT '用户ID',
-  role_id BIGINT NOT NULL COMMENT '角色ID',
+  user_id BIGINT NOT NULL COMMENT '鐢ㄦ埛ID',
+  role_id BIGINT NOT NULL COMMENT '瑙掕壊ID',
   PRIMARY KEY (id),
   UNIQUE KEY uk_user_role (user_id, role_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='鐢ㄦ埛瑙掕壊鍏宠仈琛?;
 
 -- ========================================
--- 4. 交付项目台账与立项
--- ========================================
+-- 4. 浜や粯椤圭洰鍙拌处涓庣珛椤?-- ========================================
 
--- 客户表
-DROP TABLE IF EXISTS customer;
+-- 瀹㈡埛琛?DROP TABLE IF EXISTS customer;
 CREATE TABLE customer (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '客户ID',
-  customer_name VARCHAR(100) NOT NULL COMMENT '客户名称',
-  customer_code VARCHAR(50) COMMENT '客户编码',
-  contact_person VARCHAR(50) COMMENT '联系人',
-  contact_phone VARCHAR(20) COMMENT '联系电话',
-  contact_email VARCHAR(100) COMMENT '联系邮箱',
-  address VARCHAR(255) COMMENT '地址',
-  status TINYINT DEFAULT 1 COMMENT '状态：0-停用 1-启用',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '瀹㈡埛ID',
+  customer_name VARCHAR(100) NOT NULL COMMENT '瀹㈡埛鍚嶇О',
+  customer_code VARCHAR(50) COMMENT '瀹㈡埛缂栫爜',
+  contact_person VARCHAR(50) COMMENT '鑱旂郴浜?,
+  contact_phone VARCHAR(20) COMMENT '鑱旂郴鐢佃瘽',
+  contact_email VARCHAR(100) COMMENT '鑱旂郴閭',
+  address VARCHAR(255) COMMENT '鍦板潃',
+  status TINYINT DEFAULT 1 COMMENT '鐘舵€侊細0-鍋滅敤 1-鍚敤',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='瀹㈡埛琛?;
 
--- 项目表
-DROP TABLE IF EXISTS delivery_project;
+-- 椤圭洰琛?DROP TABLE IF EXISTS delivery_project;
 CREATE TABLE delivery_project (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '项目ID',
-  project_code VARCHAR(50) NOT NULL COMMENT '项目编号',
-  project_name VARCHAR(100) NOT NULL COMMENT '项目名称',
-  customer_id BIGINT NOT NULL COMMENT '客户ID',
-  contract_no VARCHAR(50) COMMENT '合同编号',
-  contract_amount DECIMAL(15,2) COMMENT '合同金额',
-  start_date DATE COMMENT '开始日期',
-  end_date DATE COMMENT '结束日期',
-  project_manager_id BIGINT COMMENT '项目经理ID',
-  status TINYINT DEFAULT 0 COMMENT '状态：0-立项 1-进行中 2-已验收 3-已关闭',
-  description TEXT COMMENT '项目描述',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '椤圭洰ID',
+  project_code VARCHAR(50) NOT NULL COMMENT '椤圭洰缂栧彿',
+  project_name VARCHAR(100) NOT NULL COMMENT '椤圭洰鍚嶇О',
+  customer_id BIGINT NOT NULL COMMENT '瀹㈡埛ID',
+  contract_no VARCHAR(50) COMMENT '鍚堝悓缂栧彿',
+  contract_amount DECIMAL(15,2) COMMENT '鍚堝悓閲戦',
+  start_date DATE COMMENT '寮€濮嬫棩鏈?,
+  end_date DATE COMMENT '缁撴潫鏃ユ湡',
+  project_manager_id BIGINT COMMENT '椤圭洰缁忕悊ID',
+  status TINYINT DEFAULT 0 COMMENT '鐘舵€侊細0-绔嬮」 1-杩涜涓?2-宸查獙鏀?3-宸插叧闂?,
+  description TEXT COMMENT '椤圭洰鎻忚堪',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -126,187 +116,177 @@ CREATE TABLE delivery_project (
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY uk_project_code (project_code)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='交付项目表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='浜や粯椤圭洰琛?;
 
 -- ========================================
--- 5. 交付物与文档管理
+-- 5. 浜や粯鐗╀笌鏂囨。绠＄悊
 -- ========================================
 
--- 文档表
-DROP TABLE IF EXISTS project_document;
+-- 鏂囨。琛?DROP TABLE IF EXISTS project_document;
 CREATE TABLE project_document (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '文档ID',
-  project_id BIGINT NOT NULL COMMENT '项目ID',
-  doc_name VARCHAR(200) NOT NULL COMMENT '文档名称',
-  doc_type VARCHAR(50) COMMENT '文档类型',
-  file_path VARCHAR(500) COMMENT '文件路径',
-  file_size BIGINT COMMENT '文件大小（字节）',
-  version VARCHAR(20) DEFAULT '1.0' COMMENT '版本号',
-  status TINYINT DEFAULT 1 COMMENT '状态：0-草稿 1-正式',
-  description TEXT COMMENT '描述',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '鏂囨。ID',
+  project_id BIGINT NOT NULL COMMENT '椤圭洰ID',
+  doc_name VARCHAR(200) NOT NULL COMMENT '鏂囨。鍚嶇О',
+  doc_type VARCHAR(50) COMMENT '鏂囨。绫诲瀷',
+  file_path VARCHAR(500) COMMENT '鏂囦欢璺緞',
+  file_size BIGINT COMMENT '鏂囦欢澶у皬锛堝瓧鑺傦級',
+  version VARCHAR(20) DEFAULT '1.0' COMMENT '鐗堟湰鍙?,
+  status TINYINT DEFAULT 1 COMMENT '鐘舵€侊細0-鑽夌 1-姝ｅ紡',
+  description TEXT COMMENT '鎻忚堪',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目文档表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='椤圭洰鏂囨。琛?;
 
 -- ========================================
--- 6. 交付计划与范围管理
--- ========================================
+-- 6. 浜や粯璁″垝涓庤寖鍥寸鐞?-- ========================================
 
--- 里程碑表
+-- 閲岀▼纰戣〃
 DROP TABLE IF EXISTS project_milestone;
 CREATE TABLE project_milestone (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '里程碑ID',
-  project_id BIGINT NOT NULL COMMENT '项目ID',
-  milestone_name VARCHAR(100) NOT NULL COMMENT '里程碑名称',
-  plan_date DATE COMMENT '计划日期',
-  actual_date DATE COMMENT '实际日期',
-  status TINYINT DEFAULT 0 COMMENT '状态：0-未开始 1-进行中 2-已完成',
-  description TEXT COMMENT '描述',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '閲岀▼纰慖D',
+  project_id BIGINT NOT NULL COMMENT '椤圭洰ID',
+  milestone_name VARCHAR(100) NOT NULL COMMENT '閲岀▼纰戝悕绉?,
+  plan_date DATE COMMENT '璁″垝鏃ユ湡',
+  actual_date DATE COMMENT '瀹為檯鏃ユ湡',
+  status TINYINT DEFAULT 0 COMMENT '鐘舵€侊細0-鏈紑濮?1-杩涜涓?2-宸插畬鎴?,
+  description TEXT COMMENT '鎻忚堪',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目里程碑表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='椤圭洰閲岀▼纰戣〃';
 
--- 任务表（WBS）
-DROP TABLE IF EXISTS project_task;
+-- 浠诲姟琛紙WBS锛?DROP TABLE IF EXISTS project_task;
 CREATE TABLE project_task (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '任务ID',
-  project_id BIGINT NOT NULL COMMENT '项目ID',
-  parent_id BIGINT DEFAULT 0 COMMENT '父任务ID',
-  task_name VARCHAR(200) NOT NULL COMMENT '任务名称',
-  assignee_id BIGINT COMMENT '负责人ID',
-  start_date DATE COMMENT '开始日期',
-  end_date DATE COMMENT '结束日期',
-  progress INT DEFAULT 0 COMMENT '进度（0-100）',
-  status TINYINT DEFAULT 0 COMMENT '状态：0-未开始 1-进行中 2-已完成',
-  priority TINYINT DEFAULT 2 COMMENT '优先级：1-高 2-中 3-低',
-  description TEXT COMMENT '描述',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '浠诲姟ID',
+  project_id BIGINT NOT NULL COMMENT '椤圭洰ID',
+  parent_id BIGINT DEFAULT 0 COMMENT '鐖朵换鍔D',
+  task_name VARCHAR(200) NOT NULL COMMENT '浠诲姟鍚嶇О',
+  assignee_id BIGINT COMMENT '璐熻矗浜篒D',
+  start_date DATE COMMENT '寮€濮嬫棩鏈?,
+  end_date DATE COMMENT '缁撴潫鏃ユ湡',
+  progress INT DEFAULT 0 COMMENT '杩涘害锛?-100锛?,
+  status TINYINT DEFAULT 0 COMMENT '鐘舵€侊細0-鏈紑濮?1-杩涜涓?2-宸插畬鎴?,
+  priority TINYINT DEFAULT 2 COMMENT '浼樺厛绾э細1-楂?2-涓?3-浣?,
+  description TEXT COMMENT '鎻忚堪',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目任务表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='椤圭洰浠诲姟琛?;
 
 -- ========================================
--- 7. 问题与变更管理
--- ========================================
+-- 7. 闂涓庡彉鏇寸鐞?-- ========================================
 
--- 问题表
-DROP TABLE IF EXISTS project_issue;
+-- 闂琛?DROP TABLE IF EXISTS project_issue;
 CREATE TABLE project_issue (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '问题ID',
-  project_id BIGINT NOT NULL COMMENT '项目ID',
-  issue_code VARCHAR(50) COMMENT '问题编号',
-  title VARCHAR(200) NOT NULL COMMENT '问题标题',
-  description TEXT COMMENT '问题描述',
-  issue_type TINYINT DEFAULT 1 COMMENT '类型：1-问题 2-风险',
-  priority TINYINT DEFAULT 2 COMMENT '优先级：1-高 2-中 3-低',
-  status TINYINT DEFAULT 0 COMMENT '状态：0-待处理 1-处理中 2-已解决 3-已关闭',
-  reporter_id BIGINT COMMENT '提报人ID',
-  assignee_id BIGINT COMMENT '处理人ID',
-  resolve_time DATETIME COMMENT '解决时间',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '闂ID',
+  project_id BIGINT NOT NULL COMMENT '椤圭洰ID',
+  issue_code VARCHAR(50) COMMENT '闂缂栧彿',
+  title VARCHAR(200) NOT NULL COMMENT '闂鏍囬',
+  description TEXT COMMENT '闂鎻忚堪',
+  issue_type TINYINT DEFAULT 1 COMMENT '绫诲瀷锛?-闂 2-椋庨櫓',
+  priority TINYINT DEFAULT 2 COMMENT '浼樺厛绾э細1-楂?2-涓?3-浣?,
+  status TINYINT DEFAULT 0 COMMENT '鐘舵€侊細0-寰呭鐞?1-澶勭悊涓?2-宸茶В鍐?3-宸插叧闂?,
+  reporter_id BIGINT COMMENT '鎻愭姤浜篒D',
+  assignee_id BIGINT COMMENT '澶勭悊浜篒D',
+  resolve_time DATETIME COMMENT '瑙ｅ喅鏃堕棿',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目问题表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='椤圭洰闂琛?;
 
--- 变更申请表
-DROP TABLE IF EXISTS project_change;
+-- 鍙樻洿鐢宠琛?DROP TABLE IF EXISTS project_change;
 CREATE TABLE project_change (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '变更ID',
-  project_id BIGINT NOT NULL COMMENT '项目ID',
-  change_code VARCHAR(50) COMMENT '变更编号',
-  title VARCHAR(200) NOT NULL COMMENT '变更标题',
-  description TEXT COMMENT '变更描述',
-  change_type TINYINT DEFAULT 1 COMMENT '类型：1-范围 2-时间 3-成本',
-  status TINYINT DEFAULT 0 COMMENT '状态：0-待审批 1-已批准 2-已拒绝',
-  applicant_id BIGINT COMMENT '申请人ID',
-  approver_id BIGINT COMMENT '审批人ID',
-  approve_time DATETIME COMMENT '审批时间',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '鍙樻洿ID',
+  project_id BIGINT NOT NULL COMMENT '椤圭洰ID',
+  change_code VARCHAR(50) COMMENT '鍙樻洿缂栧彿',
+  title VARCHAR(200) NOT NULL COMMENT '鍙樻洿鏍囬',
+  description TEXT COMMENT '鍙樻洿鎻忚堪',
+  change_type TINYINT DEFAULT 1 COMMENT '绫诲瀷锛?-鑼冨洿 2-鏃堕棿 3-鎴愭湰',
+  status TINYINT DEFAULT 0 COMMENT '鐘舵€侊細0-寰呭鎵?1-宸叉壒鍑?2-宸叉嫆缁?,
+  applicant_id BIGINT COMMENT '鐢宠浜篒D',
+  approver_id BIGINT COMMENT '瀹℃壒浜篒D',
+  approve_time DATETIME COMMENT '瀹℃壒鏃堕棿',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目变更表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='椤圭洰鍙樻洿琛?;
 
 -- ========================================
--- 8. 客户协同与验收确认
--- ========================================
+-- 8. 瀹㈡埛鍗忓悓涓庨獙鏀剁‘璁?-- ========================================
 
--- 验收单表
+-- 楠屾敹鍗曡〃
 DROP TABLE IF EXISTS project_acceptance;
 CREATE TABLE project_acceptance (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '验收ID',
-  project_id BIGINT NOT NULL COMMENT '项目ID',
-  acceptance_code VARCHAR(50) COMMENT '验收单编号',
-  title VARCHAR(200) NOT NULL COMMENT '验收标题',
-  acceptance_date DATE COMMENT '验收日期',
-  customer_sign VARCHAR(50) COMMENT '客户签字人',
-  status TINYINT DEFAULT 0 COMMENT '状态：0-待验收 1-已通过 2-未通过',
-  result TEXT COMMENT '验收结果',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '楠屾敹ID',
+  project_id BIGINT NOT NULL COMMENT '椤圭洰ID',
+  acceptance_code VARCHAR(50) COMMENT '楠屾敹鍗曠紪鍙?,
+  title VARCHAR(200) NOT NULL COMMENT '楠屾敹鏍囬',
+  acceptance_date DATE COMMENT '楠屾敹鏃ユ湡',
+  customer_sign VARCHAR(50) COMMENT '瀹㈡埛绛惧瓧浜?,
+  status TINYINT DEFAULT 0 COMMENT '鐘舵€侊細0-寰呴獙鏀?1-宸查€氳繃 2-鏈€氳繃',
+  result TEXT COMMENT '楠屾敹缁撴灉',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目验收表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='椤圭洰楠屾敹琛?;
 
 -- ========================================
--- 9. 资源与工时管理
--- ========================================
+-- 9. 璧勬簮涓庡伐鏃剁鐞?-- ========================================
 
--- 工时记录表
-DROP TABLE IF EXISTS project_worklog;
+-- 宸ユ椂璁板綍琛?DROP TABLE IF EXISTS project_worklog;
 CREATE TABLE project_worklog (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '工时ID',
-  project_id BIGINT NOT NULL COMMENT '项目ID',
-  user_id BIGINT NOT NULL COMMENT '用户ID',
-  work_date DATE NOT NULL COMMENT '工作日期',
-  work_hours DECIMAL(5,2) NOT NULL COMMENT '工时（小时）',
-  task_id BIGINT COMMENT '任务ID',
-  description TEXT COMMENT '工作内容',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '宸ユ椂ID',
+  project_id BIGINT NOT NULL COMMENT '椤圭洰ID',
+  user_id BIGINT NOT NULL COMMENT '鐢ㄦ埛ID',
+  work_date DATE NOT NULL COMMENT '宸ヤ綔鏃ユ湡',
+  work_hours DECIMAL(5,2) NOT NULL COMMENT '宸ユ椂锛堝皬鏃讹級',
+  task_id BIGINT COMMENT '浠诲姟ID',
+  description TEXT COMMENT '宸ヤ綔鍐呭',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='工时记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='宸ユ椂璁板綍琛?;
 
 -- ========================================
--- 11. 项目售后管理
+-- 11. 椤圭洰鍞悗绠＄悊
 -- ========================================
 
--- 工单表
-DROP TABLE IF EXISTS service_ticket;
+-- 宸ュ崟琛?DROP TABLE IF EXISTS service_ticket;
 CREATE TABLE service_ticket (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '工单ID',
-  ticket_code VARCHAR(50) NOT NULL COMMENT '工单编号',
-  project_id BIGINT NOT NULL COMMENT '项目ID',
-  title VARCHAR(200) NOT NULL COMMENT '工单标题',
-  description TEXT COMMENT '问题描述',
-  priority TINYINT DEFAULT 2 COMMENT '优先级：1-高 2-中 3-低',
-  status TINYINT DEFAULT 0 COMMENT '状态：0-待处理 1-处理中 2-已解决 3-已关闭',
-  reporter_id BIGINT COMMENT '提交人ID',
-  assignee_id BIGINT COMMENT '处理人ID',
-  sla_deadline DATETIME COMMENT 'SLA截止时间',
-  resolve_time DATETIME COMMENT '解决时间',
-  satisfaction TINYINT COMMENT '满意度：1-5分',
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '宸ュ崟ID',
+  ticket_code VARCHAR(50) NOT NULL COMMENT '宸ュ崟缂栧彿',
+  project_id BIGINT NOT NULL COMMENT '椤圭洰ID',
+  title VARCHAR(200) NOT NULL COMMENT '宸ュ崟鏍囬',
+  description TEXT COMMENT '闂鎻忚堪',
+  priority TINYINT DEFAULT 2 COMMENT '浼樺厛绾э細1-楂?2-涓?3-浣?,
+  status TINYINT DEFAULT 0 COMMENT '鐘舵€侊細0-寰呭鐞?1-澶勭悊涓?2-宸茶В鍐?3-宸插叧闂?,
+  reporter_id BIGINT COMMENT '鎻愪氦浜篒D',
+  assignee_id BIGINT COMMENT '澶勭悊浜篒D',
+  sla_deadline DATETIME COMMENT 'SLA鎴鏃堕棿',
+  resolve_time DATETIME COMMENT '瑙ｅ喅鏃堕棿',
+  satisfaction TINYINT COMMENT '婊℃剰搴︼細1-5鍒?,
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -314,24 +294,20 @@ CREATE TABLE service_ticket (
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY uk_ticket_code (ticket_code)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='工单表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='宸ュ崟琛?;
 
 -- ========================================
--- 初始化数据
--- ========================================
+-- 鍒濆鍖栨暟鎹?-- ========================================
 
--- 初始化管理员用户（密码：admin123，使用BCrypt加密）
-INSERT INTO sys_user (username, password, real_name, status) 
-VALUES ('admin', '.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '系统管理员', 1);
+-- 鍒濆鍖栫鐞嗗憳鐢ㄦ埛锛堝瘑鐮侊細admin123锛屼娇鐢˙Crypt鍔犲瘑锛?INSERT INTO sys_user (username, password, real_name, status) 
+VALUES ('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '系统管理员', 1);
 
--- 初始化角色
-INSERT INTO sys_role (role_code, role_name, description) VALUES 
-('ADMIN', '管理员', '系统管理员'),
-('PM', '项目经理', '项目经理'),
-('MEMBER', '项目成员', '普通项目成员');
+-- 鍒濆鍖栬鑹?INSERT INTO sys_role (role_code, role_name, description) VALUES 
+('ADMIN', '绠＄悊鍛?, '绯荤粺绠＄悊鍛?),
+('PM', '椤圭洰缁忕悊', '椤圭洰缁忕悊'),
+('MEMBER', '椤圭洰鎴愬憳', '鏅€氶」鐩垚鍛?);
 
--- 初始化用户角色关联
-INSERT INTO sys_user_role (user_id, role_id) VALUES (1, 1);
+-- 鍒濆鍖栫敤鎴疯鑹插叧鑱?INSERT INTO sys_user_role (user_id, role_id) VALUES (1, 1);
 
--- 完成
-SELECT '数据库初始化完成！' AS message;
+-- 瀹屾垚
+SELECT '鏁版嵁搴撳垵濮嬪寲瀹屾垚锛? AS message;
