@@ -1,4 +1,4 @@
-﻿# 🚀 完整部署指南 - 前后端分离架构
+# 🚀 完整部署指南 - 前后端分离架构
 
 ## 系统架构
 
@@ -23,8 +23,8 @@
 - **服务器IP**: 120.27.247.61
 - **操作系统**: CentOS 7.9
 - **Java版本**: 1.8+
-- **MySQL版本**: 8.0+
-- **Node.js版本**: 18.x
+- **MySQL版本**: 5.7+
+- **Node.js版本**: 16.x
 
 ### 端口规划
 - **80**: Nginx (前端入口)
@@ -121,7 +121,7 @@ chmod +x deploy.sh
 
 ```bash
 # 安装Node.js 18.x
-curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -
 sudo yum install -y nodejs
 
 # 验证安装

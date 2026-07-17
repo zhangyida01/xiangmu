@@ -1,5 +1,5 @@
-﻿#!/bin/bash
-# 前端自动部署脚本
+#!/bin/bash
+# 前端自动部署脚本 - 适配CentOS 7.9
 
 set -e
 
@@ -9,8 +9,8 @@ echo "=================================="
 
 # 检查是否安装Node.js
 if ! command -v node &> /dev/null; then
-    echo "❌ 未安装Node.js，正在安装..."
-    curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+    echo "❌ 未安装Node.js，正在安装 Node.js 16.x..."
+    curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -
     sudo yum install -y nodejs
 fi
 

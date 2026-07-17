@@ -1,4 +1,4 @@
-﻿-- ========================================
+-- ========================================
 -- 交付项目管理系统数据库初始化脚本
 -- ========================================
 
@@ -25,7 +25,7 @@ CREATE TABLE sys_user (
   avatar VARCHAR(255) COMMENT '头像',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   create_by BIGINT COMMENT '创建人',
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   update_by BIGINT COMMENT '更新人',
   deleted TINYINT DEFAULT 0 COMMENT '删除标识：0-未删除 1-已删除',
   PRIMARY KEY (id),
@@ -45,7 +45,7 @@ CREATE TABLE sys_department (
   status TINYINT DEFAULT 1 COMMENT '状态：0-禁用 1-启用',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
@@ -65,7 +65,7 @@ CREATE TABLE sys_role (
   status TINYINT DEFAULT 1 COMMENT '状态：0-禁用 1-启用',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id),
@@ -99,7 +99,7 @@ CREATE TABLE customer (
   status TINYINT DEFAULT 1 COMMENT '状态：0-停用 1-启用',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
@@ -121,7 +121,7 @@ CREATE TABLE delivery_project (
   description TEXT COMMENT '项目描述',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id),
@@ -146,7 +146,7 @@ CREATE TABLE project_document (
   description TEXT COMMENT '描述',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
@@ -168,7 +168,7 @@ CREATE TABLE project_milestone (
   description TEXT COMMENT '描述',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
@@ -190,7 +190,7 @@ CREATE TABLE project_task (
   description TEXT COMMENT '描述',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
@@ -216,7 +216,7 @@ CREATE TABLE project_issue (
   resolve_time DATETIME COMMENT '解决时间',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
@@ -237,7 +237,7 @@ CREATE TABLE project_change (
   approve_time DATETIME COMMENT '审批时间',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
@@ -260,7 +260,7 @@ CREATE TABLE project_acceptance (
   result TEXT COMMENT '验收结果',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
@@ -282,7 +282,7 @@ CREATE TABLE project_worklog (
   description TEXT COMMENT '工作内容',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id)
@@ -309,7 +309,7 @@ CREATE TABLE service_ticket (
   satisfaction TINYINT COMMENT '满意度：1-5分',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   create_by BIGINT,
-  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   update_by BIGINT,
   deleted TINYINT DEFAULT 0,
   PRIMARY KEY (id),

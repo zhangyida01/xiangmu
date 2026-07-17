@@ -1,4 +1,4 @@
-﻿# 交付项目管理系统 - 前端
+# 交付项目管理系统 - 前端
 
 基于 Vue 3 + Element Plus + Vite 开发的现代化管理后台。
 
@@ -55,8 +55,8 @@ npm run build
 #### 1. 安装Node.js和npm
 
 ```bash
-# 安装Node.js 18.x
-curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+# 安装Node.js 16.x
+curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -
 sudo yum install -y nodejs
 
 # 验证安装
