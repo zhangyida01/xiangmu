@@ -10,7 +10,7 @@ spring:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
 
-# MyBatis-Plus 配置
+# MyBatis-Plus 閰嶇疆
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   type-aliases-package: com.delivery.management.entity
@@ -23,18 +23,17 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
-# JWT 配置
+# JWT 閰嶇疆
 jwt:
   secret: delivery-management-secret-key-2024
   expiration: 86400000
 
-# 服务器配置
-server:
-  port: 8080
+# 鏈嶅姟鍣ㄩ厤缃?server:
+  port: 9080
   servlet:
     context-path: /api
 
-# 日志配置
+# 鏃ュ織閰嶇疆
 logging:
   level:
     com.delivery.management: debug
