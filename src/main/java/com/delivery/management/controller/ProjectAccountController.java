@@ -22,6 +22,9 @@ public class ProjectAccountController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping("/list")
     public Result<Page<ProjectAccount>> list(
@@ -63,7 +66,7 @@ public class ProjectAccountController {
         String token = request.getHeader("Authorization");
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
-            Long userId = JwtUtil.getUserIdFromToken(token);
+            Long userId = jwtUtil.getUserIdFromToken(token);
             account.setCreatorId(userId);
         }
         boolean success = projectAccountService.save(account);
