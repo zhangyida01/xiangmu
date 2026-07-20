@@ -4,7 +4,6 @@ import com.delivery.management.common.Result;
 import com.delivery.management.entity.ProjectAccount;
 import com.delivery.management.service.ProjectAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,9 +14,6 @@ public class ProjectAccountController {
 
     @Autowired
     private ProjectAccountService projectAccountService;
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/list/{projectId}")
     public Result<List<ProjectAccount>> listByProject(@PathVariable Long projectId) {
@@ -31,7 +27,6 @@ public class ProjectAccountController {
         if (account == null) {
             return Result.fail("Account not found");
         }
-        account.setPassword("******");
         return Result.success(account);
     }
     
@@ -46,10 +41,6 @@ public class ProjectAccountController {
 
     @PostMapping("/add")
     public Result<String> add(@RequestBody ProjectAccount account) {
-        if (account.getPassword() != null && !account.getPassword().isEmpty()) {
-            account.setPassword(passwordEncoder.encode(account.getPassword()));
-        }
-        
         boolean success = projectAccountService.save(account);
         return success ? Result.success("Add success") : Result.fail("Add failed");
     }
@@ -58,12 +49,6 @@ public class ProjectAccountController {
     public Result<String> update(@RequestBody ProjectAccount account) {
         if (account.getId() == null) {
             return Result.fail("Account ID cannot be null");
-        }
-        
-        if (account.getPassword() != null && !account.getPassword().isEmpty() && !account.getPassword().equals("******")) {
-            account.setPassword(passwordEncoder.encode(account.getPassword()));
-        } else {
-            account.setPassword(null);
         }
         
         boolean success = projectAccountService.updateById(account);
