@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="account-container">
     <el-card>
       <div class="toolbar">
@@ -96,9 +96,9 @@
     <el-dialog v-model="contactDialogVisible" title="供应商联系人" width="800px">
       <el-table :data="currentContacts" style="width: 100%">
         <el-table-column prop="contactName" label="姓名" width="120" />
-        <el-table-column prop="contactRole" label="职位" width="150" />
-        <el-table-column prop="contactPhone" label="电话" width="150" />
-        <el-table-column prop="contactEmail" label="邮箱" min-width="180" />
+        <el-table-column prop="position" label="职位" width="150" />
+        <el-table-column prop="phone" label="电话" width="150" />
+        <el-table-column prop="email" label="邮箱" min-width="180" />
         <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
       </el-table>
       <template #footer>
