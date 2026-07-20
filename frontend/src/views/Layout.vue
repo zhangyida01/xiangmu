@@ -17,6 +17,10 @@
           <el-icon><Folder /></el-icon>
           <span>项目管理</span>
         </el-menu-item>
+        <el-menu-item index="/project-account">
+          <el-icon><Key /></el-icon>
+          <span>项目账户</span>
+        </el-menu-item>
         <el-menu-item index="/ticket">
           <el-icon><Tickets /></el-icon>
           <span>工单管理</span>

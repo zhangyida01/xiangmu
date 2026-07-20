@@ -30,6 +30,12 @@ const routes = [
         meta: { title: '项目管理' }
       },
       {
+        path: 'project-account',
+        name: 'ProjectAccount',
+        component: () => import('../views/ProjectAccount.vue'),
+        meta: { title: '项目账户' }
+      },
+      {
         path: 'ticket',
         name: 'Ticket',
         component: () => import('../views/Ticket.vue'),
