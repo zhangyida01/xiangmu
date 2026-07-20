@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-container class="layout-container">
     <el-aside width="200px">
       <div class="logo">
@@ -64,7 +64,7 @@ const userStore = useUserStore()
 const activeMenu = computed(() => route.path)
 
 const handleLogout = () => {
-  ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+  ElMessageBox.confirm('确定要退出登录吗?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
