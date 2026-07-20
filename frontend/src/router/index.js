@@ -24,6 +24,12 @@ const routes = [
         meta: { title: '用户管理' }
       },
       {
+        path: 'customer',
+        name: 'Customer',
+        component: () => import('../views/Customer.vue'),
+        meta: { title: '客户管理' }
+      },
+      {
         path: 'project',
         name: 'Project',
         component: () => import('../views/Project.vue'),

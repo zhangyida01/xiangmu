@@ -13,6 +13,10 @@
           <el-icon><User /></el-icon>
           <span>用户管理</span>
         </el-menu-item>
+        <el-menu-item index="/customer">
+          <el-icon><OfficeBuilding /></el-icon>
+          <span>客户管理</span>
+        </el-menu-item>
         <el-menu-item index="/project">
           <el-icon><Folder /></el-icon>
           <span>项目管理</span>
