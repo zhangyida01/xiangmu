@@ -3,9 +3,9 @@ spring:
     name: delivery-management
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.168.2.40:3306/delivery_management?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+    url: jdbc:mysql://172.16.2.40:3306/delivery_management?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
-    password: your_password_here
+    password: Zy475035@wz
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
