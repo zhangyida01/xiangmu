@@ -30,6 +30,12 @@ const routes = [
         meta: { title: '客户管理' }
       },
       {
+        path: 'supplier',
+        name: 'Supplier',
+        component: () => import('../views/Supplier.vue'),
+        meta: { title: '供应商管理' }
+      },
+      {
         path: 'project',
         name: 'Project',
         component: () => import('../views/Project.vue'),
@@ -56,7 +62,6 @@ const router = createRouter({
   routes
 })
 
-// 路由守卫
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   if (to.path !== '/login' && !token) {

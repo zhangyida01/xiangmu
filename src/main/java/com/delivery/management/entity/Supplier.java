@@ -9,29 +9,25 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("project_account")
-public class ProjectAccount {
+@TableName("supplier")
+public class Supplier {
     
     @TableId(type = IdType.AUTO)
     private Long id;
     
-    private Long projectId;
+    private String supplierCode;
     
-    private Long supplierId;
+    private String supplierName;
     
-    private String accountName;
+    private Integer supplierType;
     
-    private Integer accountType;
+    private String businessScope;
     
-    private String username;
+    private String address;
     
-    private String password;
+    private String website;
     
-    private String accessUrl;
-    
-    private Integer port;
-    
-    private Integer environment;
+    private Integer status;
     
     private String remark;
     

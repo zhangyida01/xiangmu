@@ -17,6 +17,10 @@
           <el-icon><OfficeBuilding /></el-icon>
           <span>客户管理</span>
         </el-menu-item>
+        <el-menu-item index="/supplier">
+          <el-icon><ShoppingCart /></el-icon>
+          <span>供应商管理</span>
+        </el-menu-item>
         <el-menu-item index="/project">
           <el-icon><Folder /></el-icon>
           <span>项目管理</span>

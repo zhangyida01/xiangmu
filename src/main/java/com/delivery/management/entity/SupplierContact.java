@@ -9,29 +9,27 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("project_account")
-public class ProjectAccount {
+@TableName("supplier_contact")
+public class SupplierContact {
     
     @TableId(type = IdType.AUTO)
     private Long id;
     
-    private Long projectId;
-    
     private Long supplierId;
     
-    private String accountName;
+    private String contactName;
     
-    private Integer accountType;
+    private String position;
     
-    private String username;
+    private String phone;
     
-    private String password;
+    private String email;
     
-    private String accessUrl;
+    private String wechat;
     
-    private Integer port;
+    private String qq;
     
-    private Integer environment;
+    private Integer isPrimary;
     
     private String remark;
     
