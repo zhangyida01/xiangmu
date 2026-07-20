@@ -2,6 +2,9 @@
   <div class="ticket-container">
     <el-card>
       <div class="toolbar">
+        <el-select v-model="queryParams.projectId" placeholder="项目" style="width: 200px" clearable filterable @change="loadTickets">
+          <el-option v-for="project in projectOptions" :key="project.id" :label="project.projectName" :value="project.id" />
+        </el-select>
         <el-select v-model="queryParams.status" placeholder="状态" style="width: 150px" clearable @change="loadTickets">
           <el-option label="待处理" :value="0" />
           <el-option label="处理中" :value="1" />
@@ -20,6 +23,11 @@
       <el-table :data="ticketList" style="width: 100%; margin-top: 20px" v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="ticketCode" label="工单编号" width="160" />
+        <el-table-column prop="projectId" label="项目" width="200">
+          <template #default="{ row }">
+            {{ getProjectName(row.projectId) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="title" label="标题" min-width="200" />
         <el-table-column prop="priority" label="优先级" width="100">
           <template #default="{ row }">
@@ -31,11 +39,20 @@
             <el-tag :type="statusTypes[row.status]">{{ statusTexts[row.status] }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="slaDeadline" label="SLA截止" width="180" />
-        <el-table-column prop="resolveTime" label="解决时间" width="180" />
-        <el-table-column prop="satisfaction" label="满意度" width="100">
+        <el-table-column prop="reporterId" label="提交人" width="120">
           <template #default="{ row }">
-            <el-rate v-if="row.satisfaction" :model-value="row.satisfaction" disabled />
+            {{ getUserName(row.reporterId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="assigneeId" label="处理人" width="120">
+          <template #default="{ row }">
+            {{ getUserName(row.assigneeId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="slaDeadline" label="SLA截止" width="180" />
+        <el-table-column prop="satisfaction" label="满意度" width="120">
+          <template #default="{ row }">
+            <el-rate v-if="row.satisfaction" :model-value="row.satisfaction" disabled size="small" />
             <span v-else>-</span>
           </template>
         </el-table-column>
@@ -62,8 +79,10 @@
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="700px">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
-        <el-form-item label="项目ID" prop="projectId">
-          <el-input-number v-model="form.projectId" :min="1" style="width: 100%" />
+        <el-form-item label="项目" prop="projectId">
+          <el-select v-model="form.projectId" placeholder="选择项目" style="width: 100%" filterable>
+            <el-option v-for="project in projectOptions" :key="project.id" :label="project.projectName" :value="project.id" />
+          </el-select>
         </el-form-item>
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title" />
@@ -78,11 +97,15 @@
             <el-option label="低" :value="3" />
           </el-select>
         </el-form-item>
-        <el-form-item label="提交人ID">
-          <el-input-number v-model="form.reporterId" :min="1" style="width: 100%" />
+        <el-form-item label="提交人" prop="reporterId">
+          <el-select v-model="form.reporterId" placeholder="选择提交人" style="width: 100%" filterable>
+            <el-option v-for="user in userOptions" :key="user.id" :label="user.realName || user.username" :value="user.id" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="处理人ID">
-          <el-input-number v-model="form.assigneeId" :min="1" style="width: 100%" />
+        <el-form-item label="处理人" prop="assigneeId">
+          <el-select v-model="form.assigneeId" placeholder="选择处理人" style="width: 100%" filterable>
+            <el-option v-for="user in userOptions" :key="user.id" :label="user.realName || user.username" :value="user.id" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -108,6 +131,8 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { getTicketList, addTicket, updateTicket, deleteTicket, resolveTicket } from '../api/ticket'
+import { getProjectList } from '../api/project'
+import { getUserList } from '../api/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, Edit, Delete } from '@element-plus/icons-vue'
 
@@ -120,6 +145,10 @@ const isEdit = ref(false)
 const ticketList = ref([])
 const total = ref(0)
 const formRef = ref()
+const projectOptions = ref([])
+const userOptions = ref([])
+const projectMap = ref({})
+const userMap = ref({})
 
 const priorityTexts = { 1: '高', 2: '中', 3: '低' }
 const priorityTypes = { 1: 'danger', 2: 'warning', 3: 'info' }
@@ -129,18 +158,19 @@ const statusTypes = { 0: 'danger', 1: 'warning', 2: 'success', 3: 'info' }
 const queryParams = reactive({
   page: 1,
   size: 10,
+  projectId: null,
   status: null,
   priority: null
 })
 
 const form = reactive({
   id: null,
-  projectId: 1,
+  projectId: null,
   title: '',
   description: '',
   priority: 2,
-  reporterId: 1,
-  assigneeId: 1
+  reporterId: null,
+  assigneeId: null
 })
 
 const resolveForm = reactive({
@@ -149,9 +179,45 @@ const resolveForm = reactive({
 })
 
 const rules = {
-  projectId: [{ required: true, message: '请输入项目ID', trigger: 'blur' }],
+  projectId: [{ required: true, message: '请选择项目', trigger: 'change' }],
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-  description: [{ required: true, message: '请输入问题描述', trigger: 'blur' }]
+  description: [{ required: true, message: '请输入问题描述', trigger: 'blur' }],
+  reporterId: [{ required: true, message: '请选择提交人', trigger: 'change' }],
+  assigneeId: [{ required: true, message: '请选择处理人', trigger: 'change' }]
+}
+
+const getProjectName = (projectId) => {
+  return projectMap.value[projectId] || `项目${projectId}`
+}
+
+const getUserName = (userId) => {
+  return userMap.value[userId] || `用户${userId}`
+}
+
+const loadProjects = async () => {
+  try {
+    const res = await getProjectList({ page: 1, size: 1000 })
+    projectOptions.value = res.data.records
+    projectMap.value = {}
+    res.data.records.forEach(project => {
+      projectMap.value[project.id] = project.projectName
+    })
+  } catch (error) {
+    console.error('加载项目列表失败', error)
+  }
+}
+
+const loadUsers = async () => {
+  try {
+    const res = await getUserList({ page: 1, size: 1000 })
+    userOptions.value = res.data.records
+    userMap.value = {}
+    res.data.records.forEach(user => {
+      userMap.value[user.id] = user.realName || user.username
+    })
+  } catch (error) {
+    console.error('加载用户列表失败', error)
+  }
 }
 
 const loadTickets = async () => {
@@ -172,12 +238,12 @@ const handleAdd = () => {
   dialogTitle.value = '创建工单'
   Object.assign(form, {
     id: null,
-    projectId: 1,
+    projectId: null,
     title: '',
     description: '',
     priority: 2,
-    reporterId: 1,
-    assigneeId: 1
+    reporterId: null,
+    assigneeId: null
   })
   dialogVisible.value = true
 }
@@ -249,6 +315,8 @@ const handleDelete = (row) => {
 }
 
 onMounted(() => {
+  loadProjects()
+  loadUsers()
   loadTickets()
 })
 </script>
@@ -258,5 +326,6 @@ onMounted(() => {
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
 }
 </style>

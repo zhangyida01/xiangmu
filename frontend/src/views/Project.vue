@@ -23,6 +23,11 @@
             {{ row.contractAmount ? '¥' + row.contractAmount.toLocaleString() : '-' }}
           </template>
         </el-table-column>
+        <el-table-column prop="projectManagerId" label="项目经理" width="120">
+          <template #default="{ row }">
+            {{ getUserName(row.projectManagerId) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="startDate" label="开始日期" width="120" />
         <el-table-column prop="endDate" label="结束日期" width="120" />
         <el-table-column prop="status" label="状态" width="100">
@@ -73,8 +78,10 @@
         <el-form-item label="结束日期">
           <el-date-picker v-model="form.endDate" type="date" placeholder="选择日期" format="YYYY-MM-DD" value-format="YYYY-MM-DD" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="项目经理">
-          <el-input-number v-model="form.projectManagerId" :min="1" style="width: 100%" />
+        <el-form-item label="项目经理" prop="projectManagerId">
+          <el-select v-model="form.projectManagerId" placeholder="选择项目经理" style="width: 100%" filterable>
+            <el-option v-for="user in userOptions" :key="user.id" :label="user.realName || user.username" :value="user.id" />
+          </el-select>
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="form.status" style="width: 100%">
@@ -99,6 +106,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { getProjectList, addProject, updateProject, deleteProject } from '../api/project'
+import { getUserList } from '../api/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, Edit, Delete } from '@element-plus/icons-vue'
 
@@ -110,6 +118,8 @@ const isEdit = ref(false)
 const projectList = ref([])
 const total = ref(0)
 const formRef = ref()
+const userOptions = ref([])
+const userMap = ref({})
 
 const statusTexts = ['立项', '进行中', '已验收', '已关闭']
 const statusTypes = ['info', 'warning', 'success', 'danger']
@@ -130,7 +140,7 @@ const form = reactive({
   contractAmount: 0,
   startDate: '',
   endDate: '',
-  projectManagerId: 1,
+  projectManagerId: null,
   status: 0,
   description: ''
 })
@@ -138,7 +148,25 @@ const form = reactive({
 const rules = {
   projectCode: [{ required: true, message: '请输入项目编号', trigger: 'blur' }],
   projectName: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
-  customerId: [{ required: true, message: '请输入客户ID', trigger: 'blur' }]
+  customerId: [{ required: true, message: '请输入客户ID', trigger: 'blur' }],
+  projectManagerId: [{ required: true, message: '请选择项目经理', trigger: 'change' }]
+}
+
+const getUserName = (userId) => {
+  return userMap.value[userId] || `用户${userId}`
+}
+
+const loadUsers = async () => {
+  try {
+    const res = await getUserList({ page: 1, size: 1000 })
+    userOptions.value = res.data.records
+    userMap.value = {}
+    res.data.records.forEach(user => {
+      userMap.value[user.id] = user.realName || user.username
+    })
+  } catch (error) {
+    console.error('加载用户列表失败', error)
+  }
 }
 
 const loadProjects = async () => {
@@ -166,7 +194,7 @@ const handleAdd = () => {
     contractAmount: 0,
     startDate: '',
     endDate: '',
-    projectManagerId: 1,
+    projectManagerId: null,
     status: 0,
     description: ''
   })
@@ -220,6 +248,7 @@ const handleDelete = (row) => {
 }
 
 onMounted(() => {
+  loadUsers()
   loadProjects()
 })
 </script>
