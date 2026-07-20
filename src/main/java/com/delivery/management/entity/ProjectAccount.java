@@ -1,9 +1,6 @@
 package com.delivery.management.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -21,22 +18,25 @@ public class ProjectAccount {
     
     private String accountName;
     
-    private Integer accountType;
+    private String accountType;
     
     private String username;
     
     private String password;
     
-    private String accessUrl;
-    
-    private Integer port;
-    
-    private Integer environment;
+    private String loginUrl;
     
     private String remark;
     
+    private Long creatorId;
+    
+    @TableField(value = "creator_id", exist = false)
+    private String creatorName;
+    
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
     
     @TableLogic
