@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.delivery.management.common.Result;
+import com.delivery.management.entity.Customer;
 import com.delivery.management.entity.Project;
+import com.delivery.management.entity.User;
+import com.delivery.management.service.CustomerService;
 import com.delivery.management.service.ProjectService;
+import com.delivery.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -16,18 +20,21 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+    
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private CustomerService customerService;
 
-    /**
-     * 项目列表（分页）
-     */
     @GetMapping("/list")
     public Result<IPage<Project>> list(
-            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) String keyword) {
         
-        Page<Project> pageParam = new Page<>(page, size);
+        Page<Project> pageParam = new Page<>(current, size);
         LambdaQueryWrapper<Project> wrapper = new LambdaQueryWrapper<>();
         
         if (status != null) {
@@ -43,12 +50,26 @@ public class ProjectController {
         wrapper.orderByDesc(Project::getCreateTime);
         
         IPage<Project> result = projectService.page(pageParam, wrapper);
+        
+        // Fill manager name and customer name
+        result.getRecords().forEach(project -> {
+            if (project.getProjectManagerId() != null) {
+                User manager = userService.getById(project.getProjectManagerId());
+                if (manager != null) {
+                    project.setManagerName(manager.getRealName() != null ? manager.getRealName() : manager.getUsername());
+                }
+            }
+            if (project.getCustomerId() != null) {
+                Customer customer = customerService.getById(project.getCustomerId());
+                if (customer != null) {
+                    project.setCustomerName(customer.getCustomerName());
+                }
+            }
+        });
+        
         return Result.success(result);
     }
 
-    /**
-     * 项目详情
-     */
     @GetMapping("/detail/{id}")
     public Result<Project> detail(@PathVariable Long id) {
         Project project = projectService.getById(id);
@@ -58,12 +79,8 @@ public class ProjectController {
         return Result.success(project);
     }
 
-    /**
-     * 创建项目
-     */
-    @PostMapping("/add")
+    @PostMapping
     public Result<String> add(@RequestBody Project project) {
-        // 检查项目编号是否存在
         LambdaQueryWrapper<Project> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Project::getProjectCode, project.getProjectCode());
         if (projectService.count(wrapper) > 0) {
@@ -74,10 +91,7 @@ public class ProjectController {
         return success ? Result.success("创建成功") : Result.fail("创建失败");
     }
 
-    /**
-     * 更新项目
-     */
-    @PutMapping("/update")
+    @PutMapping
     public Result<String> update(@RequestBody Project project) {
         if (project.getId() == null) {
             return Result.fail("项目ID不能为空");
@@ -87,10 +101,7 @@ public class ProjectController {
         return success ? Result.success("更新成功") : Result.fail("更新失败");
     }
 
-    /**
-     * 删除项目
-     */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable Long id) {
         boolean success = projectService.removeById(id);
         return success ? Result.success("删除成功") : Result.fail("删除失败");

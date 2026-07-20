@@ -1,5 +1,6 @@
 package com.delivery.management.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.delivery.management.common.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -29,4 +30,10 @@ public class Project extends BaseEntity {
     private Long projectManagerId;
     private Integer status;
     private String description;
+    
+    @TableField(exist = false)
+    private String managerName;
+    
+    @TableField(exist = false)
+    private String customerName;
 }

@@ -1,6 +1,5 @@
 import request from '../utils/request'
 
-// 项目列表
 export function getProjectList(params) {
   return request({
     url: '/project/list',
@@ -9,7 +8,6 @@ export function getProjectList(params) {
   })
 }
 
-// 项目详情
 export function getProjectDetail(id) {
   return request({
     url: `/project/detail/${id}`,
@@ -17,28 +15,25 @@ export function getProjectDetail(id) {
   })
 }
 
-// 创建项目
 export function addProject(data) {
   return request({
-    url: '/project/add',
+    url: '/project',
     method: 'post',
     data
   })
 }
 
-// 更新项目
 export function updateProject(data) {
   return request({
-    url: '/project/update',
+    url: '/project',
     method: 'put',
     data
   })
 }
 
-// 删除项目
 export function deleteProject(id) {
   return request({
-    url: `/project/delete/${id}`,
+    url: `/project/${id}`,
     method: 'delete'
   })
 }
