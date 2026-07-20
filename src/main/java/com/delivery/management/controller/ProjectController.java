@@ -62,7 +62,7 @@ public class ProjectController {
             if (project.getCustomerId() != null) {
                 Customer customer = customerService.getById(project.getCustomerId());
                 if (customer != null) {
-                    project.setCustomerName(customer.getCustomerName());
+                    project.setCustomerName(customer.getCompanyName());
                 }
             }
         });
