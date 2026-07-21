@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/ticket")
@@ -68,9 +70,11 @@ public class ServiceTicketController {
      */
     @PostMapping("/add")
     public Result<String> add(@RequestBody ServiceTicket ticket) {
-        // 自动生成工单编号
+        // 自动生成工单编号：TK + yyyyMMddHHmmss + 4位随机数
         if (!StringUtils.hasText(ticket.getTicketCode())) {
-            ticket.setTicketCode("TK" + System.currentTimeMillis());
+            String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            String random = String.format("%04d", new Random().nextInt(10000));
+            ticket.setTicketCode("TK" + timestamp + random);
         }
         
         // 根据优先级自动计算SLA截止时间
