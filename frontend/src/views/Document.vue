@@ -270,19 +270,21 @@ const handleSubmit = async () => {
 
 const handleDownload = async (row) => {
   try {
-    const res = await downloadDocument(row.id)
+    const token = localStorage.getItem('token')
+    const response = await fetch(`/api/project-document/download/${row.id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
     
-    // 创建Blob对象
-    const blob = new Blob([res])
+    if (!response.ok) {
+      throw new Error('下载失败')
+    }
     
-    // 创建下载链接
+    const blob = await response.blob()
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = row.fileName
     a.click()
-    
-    // 清理
     window.URL.revokeObjectURL(url)
     
     ElMessage.success('下载成功')
