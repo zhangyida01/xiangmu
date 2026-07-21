@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-container class="layout-container">
     <el-aside width="200px">
       <div class="logo">
@@ -28,6 +28,10 @@
         <el-menu-item index="/project-account">
           <el-icon><Key /></el-icon>
           <span>项目账户</span>
+        </el-menu-item>
+        <el-menu-item index="/document">
+          <el-icon><Document /></el-icon>
+          <span>交付文档</span>
         </el-menu-item>
         <el-menu-item index="/ticket">
           <el-icon><Tickets /></el-icon>
