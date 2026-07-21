@@ -28,7 +28,6 @@ public class ProjectDocument {
     
     private Long uploadBy;
     
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime uploadTime;
     
     private String remark;
@@ -36,7 +35,6 @@ public class ProjectDocument {
     @TableLogic
     private Integer deleted;
     
-    // 临时字段，不映射到数据库
     @TableField(exist = false)
     private String uploaderName;
     
