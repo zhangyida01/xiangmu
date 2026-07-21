@@ -7,7 +7,6 @@ const request = axios.create({
   timeout: 10000
 })
 
-// 请求拦截器
 request.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token')
@@ -21,9 +20,13 @@ request.interceptors.request.use(
   }
 )
 
-// 响应拦截器
 request.interceptors.response.use(
   response => {
+    // 如果是blob类型，直接返回data
+    if (response.config.responseType === 'blob') {
+      return response.data
+    }
+    
     const res = response.data
     if (res.code === 200) {
       return res
