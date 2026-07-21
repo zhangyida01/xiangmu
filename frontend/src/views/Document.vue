@@ -271,13 +271,19 @@ const handleSubmit = async () => {
 const handleDownload = async (row) => {
   try {
     const res = await downloadDocument(row.id)
-    const blob = new Blob([res])
+    const blob = new Blob([res], { type: 'application/octet-stream' })
+    const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
+    link.style.display = 'none'
+    link.href = url
     link.download = row.fileName
+    document.body.appendChild(link)
     link.click()
-    URL.revokeObjectURL(link.href)
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(link)
+    ElMessage.success('下载成功')
   } catch (error) {
+    console.error('下载失败:', error)
     ElMessage.error('下载失败')
   }
 }
