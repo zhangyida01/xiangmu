@@ -48,6 +48,12 @@ const routes = [
         meta: { title: '项目账户' }
       },
       {
+        path: 'document',
+        name: 'Document',
+        component: () => import('../views/Document.vue'),
+        meta: { title: '交付文档' }
+      },
+      {
         path: 'ticket',
         name: 'Ticket',
         component: () => import('../views/Ticket.vue'),
