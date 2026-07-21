@@ -19,6 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+
 
 
 @RestController
@@ -172,6 +177,114 @@ public class ProjectDocumentController {
             e.printStackTrace();
             return Result.fail("上传失败：" + e.getMessage());
         }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            // 1. 获取当前用户ID
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            token = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 2. 查询文档信息
+            ProjectDocument doc = projectDocumentService.getById(id);
+            if (doc == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 3. 权限检查：必须是项目成员或项目经理
+            Project project = projectService.getById(doc.getProjectId());
+            if (project == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // TODO: 后续可扩展检查项目成员
+            if (!project.getProjectManagerId().equals(userId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+            // 4. 读取文件
+            String basePath = "/data/documents";
+            File file = new File(basePath, doc.getFilePath());
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 5. 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=" + URLEncoder.encode(doc.getFileName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+            
+            // 6. 输出文件流
+            try (FileInputStream fis = new FileInputStream(file);
+                 OutputStream os = response.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                os.flush();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
+        // 1. 获取当前用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail("未登录");
+        }
+        token = token.substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        
+        // 2. 查询文档信息
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        
+        // 3. 权限检查：必须是项目经理
+        Project project = projectService.getById(doc.getProjectId());
+        if (project == null) {
+            return Result.fail("项目不存在");
+        }
+        if (!project.getProjectManagerId().equals(userId)) {
+            return Result.fail("只有项目经理可以删除文档");
+        }
+        
+        // 4. 删除物理文件
+        String basePath = "/data/documents";
+        File file = new File(basePath, doc.getFilePath());
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        // 5. 删除数据库记录（逻辑删除）
+        boolean success = projectDocumentService.removeById(id);
+        
+        return success ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/{id}")
+    public Result<ProjectDocument> detail(@PathVariable Long id) {
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        return Result.success(doc);
+    }
     }
 }
         
@@ -299,6 +412,114 @@ public class ProjectDocumentController {
             e.printStackTrace();
             return Result.fail("上传失败：" + e.getMessage());
         }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            // 1. 获取当前用户ID
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            token = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 2. 查询文档信息
+            ProjectDocument doc = projectDocumentService.getById(id);
+            if (doc == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 3. 权限检查：必须是项目成员或项目经理
+            Project project = projectService.getById(doc.getProjectId());
+            if (project == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // TODO: 后续可扩展检查项目成员
+            if (!project.getProjectManagerId().equals(userId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+            // 4. 读取文件
+            String basePath = "/data/documents";
+            File file = new File(basePath, doc.getFilePath());
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 5. 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=" + URLEncoder.encode(doc.getFileName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+            
+            // 6. 输出文件流
+            try (FileInputStream fis = new FileInputStream(file);
+                 OutputStream os = response.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                os.flush();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
+        // 1. 获取当前用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail("未登录");
+        }
+        token = token.substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        
+        // 2. 查询文档信息
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        
+        // 3. 权限检查：必须是项目经理
+        Project project = projectService.getById(doc.getProjectId());
+        if (project == null) {
+            return Result.fail("项目不存在");
+        }
+        if (!project.getProjectManagerId().equals(userId)) {
+            return Result.fail("只有项目经理可以删除文档");
+        }
+        
+        // 4. 删除物理文件
+        String basePath = "/data/documents";
+        File file = new File(basePath, doc.getFilePath());
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        // 5. 删除数据库记录（逻辑删除）
+        boolean success = projectDocumentService.removeById(id);
+        
+        return success ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/{id}")
+    public Result<ProjectDocument> detail(@PathVariable Long id) {
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        return Result.success(doc);
+    }
     }
 }
         
@@ -434,6 +655,114 @@ public class ProjectDocumentController {
             e.printStackTrace();
             return Result.fail("上传失败：" + e.getMessage());
         }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            // 1. 获取当前用户ID
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            token = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 2. 查询文档信息
+            ProjectDocument doc = projectDocumentService.getById(id);
+            if (doc == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 3. 权限检查：必须是项目成员或项目经理
+            Project project = projectService.getById(doc.getProjectId());
+            if (project == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // TODO: 后续可扩展检查项目成员
+            if (!project.getProjectManagerId().equals(userId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+            // 4. 读取文件
+            String basePath = "/data/documents";
+            File file = new File(basePath, doc.getFilePath());
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 5. 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=" + URLEncoder.encode(doc.getFileName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+            
+            // 6. 输出文件流
+            try (FileInputStream fis = new FileInputStream(file);
+                 OutputStream os = response.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                os.flush();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
+        // 1. 获取当前用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail("未登录");
+        }
+        token = token.substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        
+        // 2. 查询文档信息
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        
+        // 3. 权限检查：必须是项目经理
+        Project project = projectService.getById(doc.getProjectId());
+        if (project == null) {
+            return Result.fail("项目不存在");
+        }
+        if (!project.getProjectManagerId().equals(userId)) {
+            return Result.fail("只有项目经理可以删除文档");
+        }
+        
+        // 4. 删除物理文件
+        String basePath = "/data/documents";
+        File file = new File(basePath, doc.getFilePath());
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        // 5. 删除数据库记录（逻辑删除）
+        boolean success = projectDocumentService.removeById(id);
+        
+        return success ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/{id}")
+    public Result<ProjectDocument> detail(@PathVariable Long id) {
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        return Result.success(doc);
+    }
     }
 }
             
@@ -558,6 +887,114 @@ public class ProjectDocumentController {
             e.printStackTrace();
             return Result.fail("上传失败：" + e.getMessage());
         }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            // 1. 获取当前用户ID
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            token = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 2. 查询文档信息
+            ProjectDocument doc = projectDocumentService.getById(id);
+            if (doc == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 3. 权限检查：必须是项目成员或项目经理
+            Project project = projectService.getById(doc.getProjectId());
+            if (project == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // TODO: 后续可扩展检查项目成员
+            if (!project.getProjectManagerId().equals(userId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+            // 4. 读取文件
+            String basePath = "/data/documents";
+            File file = new File(basePath, doc.getFilePath());
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 5. 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=" + URLEncoder.encode(doc.getFileName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+            
+            // 6. 输出文件流
+            try (FileInputStream fis = new FileInputStream(file);
+                 OutputStream os = response.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                os.flush();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
+        // 1. 获取当前用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail("未登录");
+        }
+        token = token.substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        
+        // 2. 查询文档信息
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        
+        // 3. 权限检查：必须是项目经理
+        Project project = projectService.getById(doc.getProjectId());
+        if (project == null) {
+            return Result.fail("项目不存在");
+        }
+        if (!project.getProjectManagerId().equals(userId)) {
+            return Result.fail("只有项目经理可以删除文档");
+        }
+        
+        // 4. 删除物理文件
+        String basePath = "/data/documents";
+        File file = new File(basePath, doc.getFilePath());
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        // 5. 删除数据库记录（逻辑删除）
+        boolean success = projectDocumentService.removeById(id);
+        
+        return success ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/{id}")
+    public Result<ProjectDocument> detail(@PathVariable Long id) {
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        return Result.success(doc);
+    }
     }
 }
             if (doc.getProjectId() != null) {
@@ -686,6 +1123,114 @@ public class ProjectDocumentController {
             e.printStackTrace();
             return Result.fail("上传失败：" + e.getMessage());
         }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            // 1. 获取当前用户ID
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            token = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 2. 查询文档信息
+            ProjectDocument doc = projectDocumentService.getById(id);
+            if (doc == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 3. 权限检查：必须是项目成员或项目经理
+            Project project = projectService.getById(doc.getProjectId());
+            if (project == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // TODO: 后续可扩展检查项目成员
+            if (!project.getProjectManagerId().equals(userId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+            // 4. 读取文件
+            String basePath = "/data/documents";
+            File file = new File(basePath, doc.getFilePath());
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 5. 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=" + URLEncoder.encode(doc.getFileName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+            
+            // 6. 输出文件流
+            try (FileInputStream fis = new FileInputStream(file);
+                 OutputStream os = response.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                os.flush();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
+        // 1. 获取当前用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail("未登录");
+        }
+        token = token.substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        
+        // 2. 查询文档信息
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        
+        // 3. 权限检查：必须是项目经理
+        Project project = projectService.getById(doc.getProjectId());
+        if (project == null) {
+            return Result.fail("项目不存在");
+        }
+        if (!project.getProjectManagerId().equals(userId)) {
+            return Result.fail("只有项目经理可以删除文档");
+        }
+        
+        // 4. 删除物理文件
+        String basePath = "/data/documents";
+        File file = new File(basePath, doc.getFilePath());
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        // 5. 删除数据库记录（逻辑删除）
+        boolean success = projectDocumentService.removeById(id);
+        
+        return success ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/{id}")
+    public Result<ProjectDocument> detail(@PathVariable Long id) {
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        return Result.success(doc);
+    }
     }
 }
             
@@ -810,6 +1355,114 @@ public class ProjectDocumentController {
             e.printStackTrace();
             return Result.fail("上传失败：" + e.getMessage());
         }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            // 1. 获取当前用户ID
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            token = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 2. 查询文档信息
+            ProjectDocument doc = projectDocumentService.getById(id);
+            if (doc == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 3. 权限检查：必须是项目成员或项目经理
+            Project project = projectService.getById(doc.getProjectId());
+            if (project == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // TODO: 后续可扩展检查项目成员
+            if (!project.getProjectManagerId().equals(userId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+            // 4. 读取文件
+            String basePath = "/data/documents";
+            File file = new File(basePath, doc.getFilePath());
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 5. 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=" + URLEncoder.encode(doc.getFileName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+            
+            // 6. 输出文件流
+            try (FileInputStream fis = new FileInputStream(file);
+                 OutputStream os = response.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                os.flush();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
+        // 1. 获取当前用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail("未登录");
+        }
+        token = token.substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        
+        // 2. 查询文档信息
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        
+        // 3. 权限检查：必须是项目经理
+        Project project = projectService.getById(doc.getProjectId());
+        if (project == null) {
+            return Result.fail("项目不存在");
+        }
+        if (!project.getProjectManagerId().equals(userId)) {
+            return Result.fail("只有项目经理可以删除文档");
+        }
+        
+        // 4. 删除物理文件
+        String basePath = "/data/documents";
+        File file = new File(basePath, doc.getFilePath());
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        // 5. 删除数据库记录（逻辑删除）
+        boolean success = projectDocumentService.removeById(id);
+        
+        return success ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/{id}")
+    public Result<ProjectDocument> detail(@PathVariable Long id) {
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        return Result.success(doc);
+    }
     }
 }
         
@@ -934,6 +1587,114 @@ public class ProjectDocumentController {
             e.printStackTrace();
             return Result.fail("上传失败：" + e.getMessage());
         }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            // 1. 获取当前用户ID
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            token = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 2. 查询文档信息
+            ProjectDocument doc = projectDocumentService.getById(id);
+            if (doc == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 3. 权限检查：必须是项目成员或项目经理
+            Project project = projectService.getById(doc.getProjectId());
+            if (project == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // TODO: 后续可扩展检查项目成员
+            if (!project.getProjectManagerId().equals(userId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+            // 4. 读取文件
+            String basePath = "/data/documents";
+            File file = new File(basePath, doc.getFilePath());
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 5. 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=" + URLEncoder.encode(doc.getFileName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+            
+            // 6. 输出文件流
+            try (FileInputStream fis = new FileInputStream(file);
+                 OutputStream os = response.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                os.flush();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
+        // 1. 获取当前用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail("未登录");
+        }
+        token = token.substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        
+        // 2. 查询文档信息
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        
+        // 3. 权限检查：必须是项目经理
+        Project project = projectService.getById(doc.getProjectId());
+        if (project == null) {
+            return Result.fail("项目不存在");
+        }
+        if (!project.getProjectManagerId().equals(userId)) {
+            return Result.fail("只有项目经理可以删除文档");
+        }
+        
+        // 4. 删除物理文件
+        String basePath = "/data/documents";
+        File file = new File(basePath, doc.getFilePath());
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        // 5. 删除数据库记录（逻辑删除）
+        boolean success = projectDocumentService.removeById(id);
+        
+        return success ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/{id}")
+    public Result<ProjectDocument> detail(@PathVariable Long id) {
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        return Result.success(doc);
+    }
     }
 });
         
@@ -1060,6 +1821,114 @@ public class ProjectDocumentController {
             e.printStackTrace();
             return Result.fail("上传失败：" + e.getMessage());
         }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            // 1. 获取当前用户ID
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            token = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 2. 查询文档信息
+            ProjectDocument doc = projectDocumentService.getById(id);
+            if (doc == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 3. 权限检查：必须是项目成员或项目经理
+            Project project = projectService.getById(doc.getProjectId());
+            if (project == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // TODO: 后续可扩展检查项目成员
+            if (!project.getProjectManagerId().equals(userId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+            // 4. 读取文件
+            String basePath = "/data/documents";
+            File file = new File(basePath, doc.getFilePath());
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 5. 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=" + URLEncoder.encode(doc.getFileName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+            
+            // 6. 输出文件流
+            try (FileInputStream fis = new FileInputStream(file);
+                 OutputStream os = response.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                os.flush();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
+        // 1. 获取当前用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail("未登录");
+        }
+        token = token.substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        
+        // 2. 查询文档信息
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        
+        // 3. 权限检查：必须是项目经理
+        Project project = projectService.getById(doc.getProjectId());
+        if (project == null) {
+            return Result.fail("项目不存在");
+        }
+        if (!project.getProjectManagerId().equals(userId)) {
+            return Result.fail("只有项目经理可以删除文档");
+        }
+        
+        // 4. 删除物理文件
+        String basePath = "/data/documents";
+        File file = new File(basePath, doc.getFilePath());
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        // 5. 删除数据库记录（逻辑删除）
+        boolean success = projectDocumentService.removeById(id);
+        
+        return success ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/{id}")
+    public Result<ProjectDocument> detail(@PathVariable Long id) {
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        return Result.success(doc);
+    }
     }
 }
 
@@ -1184,5 +2053,113 @@ public class ProjectDocumentController {
             e.printStackTrace();
             return Result.fail("上传失败：" + e.getMessage());
         }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            // 1. 获取当前用户ID
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            token = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            // 2. 查询文档信息
+            ProjectDocument doc = projectDocumentService.getById(id);
+            if (doc == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 3. 权限检查：必须是项目成员或项目经理
+            Project project = projectService.getById(doc.getProjectId());
+            if (project == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // TODO: 后续可扩展检查项目成员
+            if (!project.getProjectManagerId().equals(userId)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+            // 4. 读取文件
+            String basePath = "/data/documents";
+            File file = new File(basePath, doc.getFilePath());
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            // 5. 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=" + URLEncoder.encode(doc.getFileName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+            
+            // 6. 输出文件流
+            try (FileInputStream fis = new FileInputStream(file);
+                 OutputStream os = response.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                os.flush();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
+        // 1. 获取当前用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail("未登录");
+        }
+        token = token.substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        
+        // 2. 查询文档信息
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        
+        // 3. 权限检查：必须是项目经理
+        Project project = projectService.getById(doc.getProjectId());
+        if (project == null) {
+            return Result.fail("项目不存在");
+        }
+        if (!project.getProjectManagerId().equals(userId)) {
+            return Result.fail("只有项目经理可以删除文档");
+        }
+        
+        // 4. 删除物理文件
+        String basePath = "/data/documents";
+        File file = new File(basePath, doc.getFilePath());
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        // 5. 删除数据库记录（逻辑删除）
+        boolean success = projectDocumentService.removeById(id);
+        
+        return success ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/{id}")
+    public Result<ProjectDocument> detail(@PathVariable Long id) {
+        ProjectDocument doc = projectDocumentService.getById(id);
+        if (doc == null) {
+            return Result.fail("文档不存在");
+        }
+        return Result.success(doc);
+    }
     }
 }
