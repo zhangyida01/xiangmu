@@ -212,10 +212,8 @@ public class ProjectDocumentController {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
-            if (!project.getProjectManagerId().equals(userId)) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                return;
-            }
+            // 下载权限：允许所有登录用户下载
+            // TODO: 后续可扩展检查项目成员权限
             
             String basePath = "/data/documents";
             File file = new File(basePath, doc.getFilePath());
