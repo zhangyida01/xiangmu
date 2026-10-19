@@ -1,0 +1,18 @@
+logging:
+  level:
+    root: WARN
+    com.pdm: INFO
+    # 迁移与端口是生产环境最关键的两行 INFO，单独放开，保证 §8.3 的判读表在 prod 下也成立
+    org.flywaydb: INFO
+    org.springframework.boot.web.embedded.tomcat: INFO
+  file:
+    name: /app/logs/delivery-server.log
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB
+      max-history: 30
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false

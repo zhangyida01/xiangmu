@@ -1,0 +1,37 @@
+# Java
+target/
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/
+mvnw
+mvnw.cmd
+
+# Node / Vue
+node_modules/
+dist/
+.vite/
+*.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 运行期与机密（严禁提交）
+.env
+*.env
+data/
+logs/
+uploads/
+backup/
+master.key
+*.pem
+*.p12
+*.jks

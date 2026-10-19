@@ -1,0 +1,11 @@
+.page { padding: 16px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.toolbar .spacer { flex: 1; }
+.pager { display: flex; justify-content: flex-end; margin-top: 12px; }
+.mono { font-family: Consolas, Monaco, "Courier New", monospace; }
+.muted { color: #909399; }
+.secret-mask { letter-spacing: 2px; color: #606266; }
+.danger-text { color: #f56c6c; }
+.warn-text { color: #e6a23c; }
+.ok-text { color: #67c23a; }
+.card-gap { margin-bottom: 12px; }

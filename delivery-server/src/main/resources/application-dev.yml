@@ -1,0 +1,6 @@
+logging:
+  level:
+    com.pdm: DEBUG
+springdoc:
+  swagger-ui:
+    enabled: true

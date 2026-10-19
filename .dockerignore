@@ -1,0 +1,11 @@
+**/.git
+**/node_modules
+**/dist
+**/target
+**/*.log
+docs
+data
+deploy/.env
+.env
+.gitignore
+README.md

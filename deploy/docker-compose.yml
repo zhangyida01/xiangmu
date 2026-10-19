@@ -1,0 +1,80 @@
+services:
+  mysql:
+    # 钉死 8.0.32：更新的 8.0.x 官方镜像基于 Oracle Linux 9，glibc 要求 CPU 支持 x86-64-v2，
+    # 老虚拟化平台（vCPU 只暴露 baseline）会 Fatal glibc error 直接起不来；8.0.32 基于 OL8，v1 CPU 可跑
+    image: mysql:8.0.32
+    container_name: pdm-mysql
+    restart: always
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+      - --default-time-zone=+08:00
+      - --max_connections=200
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME:-pdm}
+      MYSQL_USER: ${DB_USER:-pdm}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Shanghai
+    volumes:
+      # 数据落在宿主机，容器重建不丢；:z 让 SELinux 打上容器可读写标签（CentOS 7 Enforcing 时必需）
+      - /data/pdm/mysql:/var/lib/mysql:z
+    ports:
+      # 数据库只绑回环，任何外部机器都连不上，无需在防火墙处理
+      - "127.0.0.1:3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  app:
+    image: pdm/delivery-server:1.0.0
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: pdm-app
+    restart: always
+    # 必须给容器设内存上限：JVM 用 -XX:MaxRAMPercentage=70 算堆大小，
+    # 不设上限它会按宿主机总内存的 70% 来算，容易和 MySQL 抢内存被 OOMKilled
+    mem_limit: ${APP_MEM_LIMIT:-1g}
+    mem_reservation: 512m
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:-pdm}
+      DB_USER: ${DB_USER:-pdm}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      PDM_MASTER_KEY_FILE: /app/keys/master.key
+      PDM_UPLOAD_DIR: /app/uploads
+      PDM_JWT_SECRET: ${JWT_SECRET}
+      PDM_INIT_PASSWORD: ${INIT_ADMIN_PASSWORD:-Admin@12345}
+      PDM_CAPTCHA_ENABLED: ${CAPTCHA_ENABLED:-true}
+    volumes:
+      - /data/pdm/uploads:/app/uploads:z
+      - /data/pdm/logs:/app/logs:z
+      # 主密钥只读挂载：容器内改不了，泄露面更小
+      - /data/pdm/keys:/app/keys:ro,z
+    ports:
+      # 需要从自己电脑的浏览器访问就得绑 0.0.0.0；只在虚拟机本机访问改成 127.0.0.1；启用 nginx 后可整段删掉
+      - "${APP_LISTEN:-0.0.0.0}:${APP_PORT:-8080}:8080"
+
+  # 需要 HTTPS 时取消注释，并准备 /opt/pdm/nginx/certs 下的证书
+  # nginx:
+  #   image: nginx:1.25-alpine
+  #   container_name: pdm-nginx
+  #   restart: always
+  #   depends_on: [app]
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/conf.d:/etc/nginx/conf.d:ro,z
+  #     - /opt/pdm/nginx/certs:/etc/nginx/certs:ro,z
+  #     - /data/pdm/logs/nginx:/var/log/nginx:z
